@@ -3,8 +3,7 @@
 
 Player
     - Player Sprites
-    - 2º Player
-    - Carrot
+    - Both but Carrots
 
 Carrot
     - Scoring
@@ -12,8 +11,13 @@ Carrot
 Boxes
     - Get destroyed animation
 
-Level
-    - Random carrot behind box
+Bomb
+    - Bug with timer
+
+Others
+    - UI
+    - Sound
+    - Music
 
 
 Nice to have

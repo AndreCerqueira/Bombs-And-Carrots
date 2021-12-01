@@ -1,13 +1,29 @@
 import pygame
-from pygame import sprite
 from utilis import import_folder
 from bomb import Bomb
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, id):
         super().__init__()
 
         self.bombs = []
+        self.bombing = False
+        self.id = id
+        
+        
+        # Player Keys
+        if id == '1':
+            self.left = pygame.K_a
+            self.right = pygame.K_d
+            self.up = pygame.K_w
+            self.down = pygame.K_s
+            self.attack = pygame.K_LSHIFT
+        else:
+            self.left = pygame.K_LEFT
+            self.right = pygame.K_RIGHT
+            self.up = pygame.K_UP
+            self.down = pygame.K_DOWN
+            self.attack = pygame.K_RSHIFT
 
         # Player image and animations
         self.import_character_assets()
@@ -32,7 +48,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def import_character_assets(self):
-        character_path = 'assets/player_1/'
+        character_path = 'assets/player_' + self.id + '/'
         self.animations = {'idle-front':[],'walk-front':[],'walk-back':[],'walk-side':[]}
 
         for animation in self.animations.keys():
@@ -61,23 +77,23 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         # Get the direction
-        if keys[pygame.K_a]: # Left
+        if keys[self.left]: # Left
             self.direction.x = -1
-        if keys[pygame.K_d]: # Right
+        if keys[self.right]: # Right
             self.direction.x = 1
-        if keys[pygame.K_w]: # Up
+        if keys[self.up]: # Up
             self.direction.y = -1
-        if keys[pygame.K_s]: # Down
+        if keys[self.down]: # Down
             self.direction.y = 1
 
         # Remove speed if its not moving
-        if not keys[pygame.K_a] and not keys[pygame.K_d]:
+        if not keys[self.left] and not keys[self.right]:
             self.direction.x = 0
-        if not keys[pygame.K_w] and not keys[pygame.K_s]:
+        if not keys[self.up] and not keys[self.down]:
             self.direction.y = 0
 
         # Drop Bomb
-        if keys[pygame.K_SPACE]:
+        if keys[self.attack]:
             self.drop_bomb()
 
 
@@ -101,6 +117,7 @@ class Player(pygame.sprite.Sprite):
             y = self.rect.y + self.height/2
             bomb = Bomb((x, y))
             self.bombs.append(bomb)
+            self.bombing = True
             pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 
