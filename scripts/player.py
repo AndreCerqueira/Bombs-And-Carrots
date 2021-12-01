@@ -21,13 +21,18 @@ class Player(pygame.sprite.Sprite):
         self.width = 100
         self.height = 100
 
+        self.on_left = False
+        self.on_right = False
+        self.on_down = False
+        self.on_top = False
+
         # Player Movement
-        self.speed = 8
+        self.speed = 4
         self.direction = pygame.math.Vector2(0,0)
 
 
     def import_character_assets(self):
-        character_path = 'assets/sprites/other/hero/'
+        character_path = 'assets/player_1/'
         self.animations = {'idle-front':[],'walk-front':[],'walk-back':[],'walk-side':[]}
 
         for animation in self.animations.keys():
@@ -57,13 +62,13 @@ class Player(pygame.sprite.Sprite):
 
         # Get the direction
         if keys[pygame.K_a]: # Left
-            self.direction.x = -self.speed
+            self.direction.x = -1
         if keys[pygame.K_d]: # Right
-            self.direction.x = self.speed
+            self.direction.x = 1
         if keys[pygame.K_w]: # Up
-            self.direction.y = -self.speed
+            self.direction.y = -1
         if keys[pygame.K_s]: # Down
-            self.direction.y = self.speed
+            self.direction.y = 1
 
         # Remove speed if its not moving
         if not keys[pygame.K_a] and not keys[pygame.K_d]:
@@ -74,9 +79,6 @@ class Player(pygame.sprite.Sprite):
         # Drop Bomb
         if keys[pygame.K_SPACE]:
             self.drop_bomb()
-
-        # Add the direction to the player
-        self.rect.topleft += self.direction
 
 
     def get_status(self):
@@ -102,11 +104,13 @@ class Player(pygame.sprite.Sprite):
             pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 
-    def update(self):
+    def update(self, win):
         self.get_input()
         self.get_status()
         self.animate()
 
         
+        if (len(self.bombs) > 0):
+            win.blit(self.bombs[0].image, self.bombs[0].rect)
 
     #def draw():

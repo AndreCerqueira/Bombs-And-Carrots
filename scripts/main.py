@@ -1,8 +1,7 @@
 import pygame, sys
-from settings import WIDTH, HEIGHT
-from player import Player
-from carrot import Carrot
-from box import Box
+from settings import WIDTH, HEIGHT, level_map
+from level import Level
+from explosion import Explosion
 
 # Pygame setup
 pygame.init()
@@ -10,7 +9,8 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Bombs & Carrots!")
 clock = pygame.time.Clock()
 
-player = Player((100, 300))
+level = Level(level_map, WIN)
+explosionList = []
 
 # Events
 def events():
@@ -18,12 +18,25 @@ def events():
         if event.type == pygame.USEREVENT: 
 
             # Make a explosion
-            print("boom")
-
+            x = level.player_obj.bombs[0].rect.x - 30
+            y = level.player_obj.bombs[0].rect.y - 30
+            explosion = Explosion((x, y))
+            explosionList.append(explosion)
+            
             # Destroy bomb
-            player.bombs.clear()
+            level.player_obj.bombs.clear()
 
-            # Destroy Boxess
+            # Destroy Boxes
+            destruction_area = pygame.Rect(explosion.rect)
+            destruction_area.width -= 20
+            destruction_area.height -= 20
+
+            destruction_area.x += 20
+            destruction_area.y += 20
+
+            for box in level.boxes.sprites():
+                if destruction_area.colliderect(box.rect):
+                    box.kill()
 
             pygame.time.set_timer(pygame.USEREVENT, 0)
         if event.type == pygame.QUIT:
@@ -33,31 +46,22 @@ def events():
 
 def main():
 
-    # Game Setup
-    
-    carrot = Carrot((700, 300))
-    box = Box((200, 200))
-
     # Game Loop
     while True:
         events()
 
-        # Update        
-        player.update()
+        level.run()
 
-        # Draw
-        if (len(player.bombs) > 0):
-            WIN.blit(player.bombs[0].image, player.bombs[0].rect)
-
-        WIN.blit(carrot.image, carrot.rect)
-        WIN.blit(box.image, box.rect)
-        WIN.blit(player.image, player.rect)
-        
+        #explosion.update(1)
+        if len(explosionList) > 0:
+            for explosion in explosionList:
+                explosion.update(0.25)
+                WIN.blit(explosion.image, explosion.rect)
 
         # Final Stuff
         pygame.display.update()
         clock.tick(60)
-        WIN.fill('black')
+
 
 
 if __name__ == "__main__":
