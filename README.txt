@@ -2,11 +2,11 @@
 ---------- TO DO LIST ----------
 
 Player
-    - Player Sprites
-    - Both but Carrots
+    - Player Sprites (praticamente)
 
 Carrot
     - Scoring
+    - Differentiate the carrots
 
 Boxes
     - Get destroyed animation
@@ -18,6 +18,7 @@ Others
     - UI
     - Sound
     - Music
+    - Reset after catch carrot
 
 
 Nice to have

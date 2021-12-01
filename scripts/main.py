@@ -1,7 +1,7 @@
 import pygame, sys
 from settings import WIDTH, HEIGHT, level_map
 from level import Level
-from carrot import Carrot
+from items import Carrot
 from explosion import Explosion
 
 # Pygame setup
@@ -86,14 +86,18 @@ def main():
     # Setup Game Fase
     game_start = False
     level.pre_run()
+    carrot_count = 0
+    player_color = (141, 176, 36)
     while not game_start:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-    
-        text = FONT.render("Select a box and hide your Carrot!", True, 'white')
-        WIN.blit(text, (WIDTH/2-text.get_width()/2, 30))
+
+        text_0 = FONT.render("Player " + str(carrot_count), True, player_color)
+        text_1 = FONT.render("         select a box and hide your Carrot!", True, 'white')
+        WIN.blit(text_1, (WIDTH/2-text_1.get_width()/2, 30))
+        WIN.blit(text_0, (WIDTH/2-text_1.get_width()/2, 30))
 
         for box in level.boxes.sprites():
             # Destroy Boxes
@@ -101,7 +105,12 @@ def main():
                 #box.kill()
                 carrot = Carrot((box.rect.x, box.rect.y))
                 level.insert_carrot(carrot)
-                game_start = True
+                carrot_count += 1
+                player_color = (66, 117, 216)
+                level.pre_run()
+                pygame.time.delay(300)
+                if carrot_count == 2:
+                    game_start = True
 
         pygame.display.update()
         clock.tick(60)

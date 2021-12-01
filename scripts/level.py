@@ -2,7 +2,7 @@ import pygame
 import random
 from settings import *
 from player import Player
-from box import Box
+from items import Box, Rock
 from pytmx.util_pygame import load_pygame
     
 class Level():
@@ -11,15 +11,17 @@ class Level():
 
         self.tmxdata = load_pygame("assets/levels/level_data/map_0.tmx")
         self.display_surface = surface 
+        self.carrots = []
         self.setup_level(level_data)
 
 
     def insert_carrot(self, carrot):
-        self.carrot = carrot
+        self.carrots.append(carrot)
 
 
     def setup_level(self,layout):
         self.boxes = pygame.sprite.Group()
+        self.rocks = pygame.sprite.Group()
         self.player = pygame.sprite.Group()
         self.player_obj = []
 
@@ -32,7 +34,7 @@ class Level():
             for col_index,cell in enumerate(row):
                 offset.x += TILE_OFFSET * 2
 
-                if cell == 'X':
+                if cell == 'C':
                     
                     x = col_index * tile_size + WIDTH_OFFSET + offset.x
                     y = row_index * tile_size + HEIGHT_OFFSET + offset.y
@@ -40,7 +42,16 @@ class Level():
                     box = Box((x,y))
                     self.boxes.add(box)
 
+                if cell == 'R':
+                    
+                    x = col_index * tile_size + WIDTH_OFFSET + offset.x
+                    y = row_index * tile_size + HEIGHT_OFFSET + offset.y
+
+                    rock = Rock((x,y))
+                    self.rocks.add(rock)
+
                 if cell == '1' or cell == '2':
+
                     x = col_index * tile_size + WIDTH_OFFSET + offset.x - 30
                     y = row_index * tile_size + HEIGHT_OFFSET + offset.y - 60
                     
@@ -61,8 +72,12 @@ class Level():
 
         for player in self.player.sprites():
             player.rect.x += player.direction.x * player.speed
-        
-            for sprite in self.boxes.sprites():
+
+            all_sprites = pygame.sprite.Group()
+            all_sprites.add(self.boxes)
+            all_sprites.add(self.rocks)
+
+            for sprite in all_sprites.sprites():
                 rect = sprite.rect
                 temp_rect = pygame.Rect(sprite.rect)
                 temp_rect.x = (rect.x - 30)
@@ -94,7 +109,11 @@ class Level():
         for player in self.player.sprites():
             player.rect.y += player.direction.y * player.speed
 
-            for sprite in self.boxes.sprites():
+            all_sprites = pygame.sprite.Group()
+            all_sprites.add(self.boxes)
+            all_sprites.add(self.rocks)
+
+            for sprite in all_sprites.sprites():
                 rect = sprite.rect
                 temp_rect = pygame.Rect(sprite.rect)
                 temp_rect.x = (rect.x - 30)
@@ -127,6 +146,7 @@ class Level():
         self.vertical_movement_collision()
         self.draw_map()
         self.boxes.draw(self.display_surface)
+        self.rocks.draw(self.display_surface)
         self.player.update(self.display_surface)
         self.player.draw(self.display_surface)
 
@@ -140,7 +160,9 @@ class Level():
 
         # Draw
         self.draw_map()
-        self.display_surface.blit(self.carrot.image, self.carrot.rect)
+        for carrot in self.carrots:
+            self.display_surface.blit(carrot.image, carrot.rect)
         self.boxes.draw(self.display_surface)
+        self.rocks.draw(self.display_surface)
         self.player.update(self.display_surface)
         self.player.draw(self.display_surface)
