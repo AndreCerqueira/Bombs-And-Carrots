@@ -1,18 +1,18 @@
 import pygame
-import random
+from random import randint
 from settings import *
 from player import Player
 from items import Box, Rock
 from pytmx.util_pygame import load_pygame
     
 class Level():
-    def __init__(self, level_data, surface):
+    def __init__(self, surface):
         super().__init__()
 
         self.tmxdata = load_pygame("assets/levels/level_data/map_0.tmx")
         self.display_surface = surface 
         self.carrots = []
-        self.setup_level(level_data)
+        self.setup_level(levels[randint(0, 3)])
 
 
     def insert_carrot(self, carrot):
@@ -22,6 +22,12 @@ class Level():
     def setup_level(self,layout):
         self.boxes = pygame.sprite.Group()
         self.rocks = pygame.sprite.Group()
+
+        try:
+            backup_points = (self.player_obj[0].points, self.player_obj[1].points)
+        except:
+            backup_points = (0, 0)
+
         self.player = pygame.sprite.Group()
         self.player_obj = []
 
@@ -42,20 +48,20 @@ class Level():
                     box = Box((x,y))
                     self.boxes.add(box)
 
-                if cell == 'R':
+                elif cell == 'R':
                     
-                    x = col_index * tile_size + WIDTH_OFFSET + offset.x
-                    y = row_index * tile_size + HEIGHT_OFFSET + offset.y
+                    x = col_index * tile_size + WIDTH_OFFSET + offset.x - 10
+                    y = row_index * tile_size + HEIGHT_OFFSET + offset.y - 10
 
                     rock = Rock((x,y))
                     self.rocks.add(rock)
 
-                if cell == '1' or cell == '2':
+                elif cell == '1' or cell == '2':
 
                     x = col_index * tile_size + WIDTH_OFFSET + offset.x - 30
                     y = row_index * tile_size + HEIGHT_OFFSET + offset.y - 60
                     
-                    player_sprite = Player((x,y), cell)
+                    player_sprite = Player((x,y), cell, backup_points[int(cell)-1])
                     self.player_obj.append(player_sprite)
                     self.player.add(player_sprite)
 
@@ -151,12 +157,33 @@ class Level():
         self.player.draw(self.display_surface)
 
 
+    def carrot_player_collision(self):
+
+        for carrot in self.carrots:
+            rect = carrot.rect
+            temp_rect = pygame.Rect(carrot.rect)
+            temp_rect.x = (rect.x - 30)
+            temp_rect.y = (rect.y - 60)
+
+            for player in self.player_obj:
+                if player.rect.colliderect(temp_rect):
+                    if int(player.id)-1 != carrot.id:
+                        player.points += 1
+                        self.carrots.remove(carrot)
+
+
+    def reset_level(self):
+        self.carrots.clear()
+        self.setup_level(levels[randint(0, 3)])
+
+
     def run(self):
 
         # Update
         self.boxes.update()
         self.horizontal_movement_collision()
         self.vertical_movement_collision()
+        self.carrot_player_collision()
 
         # Draw
         self.draw_map()

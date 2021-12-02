@@ -1,5 +1,5 @@
 import pygame, sys
-from settings import WIDTH, HEIGHT, level_map
+from settings import WIDTH, HEIGHT
 from level import Level
 from items import Carrot
 from explosion import Explosion
@@ -11,8 +11,15 @@ FONT = pygame.font.Font("assets/fonts/prstart.ttf", 20)
 pygame.display.set_caption("Bombs & Carrots!")
 clock = pygame.time.Clock()
 
-level = Level(level_map, WIN)
+# Game setup
+level = Level(WIN)
 explosionList = [[],[]]
+
+# Game UI
+FONT_SCORE = pygame.font.Font("assets/fonts/prstart.ttf", 20)
+carrot_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_carrot.png"), (48, 48))
+player_1_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player1.png"), (48, 48))
+player_2_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player2.png"), (48, 48))
 
 # Events
 def events():
@@ -21,6 +28,10 @@ def events():
 
             for player in level.player_obj:
                 if player.bombing == True:
+                    
+                    # Verify bug of having more than 1 bomb
+                    if len(player.bombs) > 1:
+                        player.bombs.pop(0)
 
                     # Get Bomb Position
                     x = player.bombs[0].rect.x - 30
@@ -53,24 +64,32 @@ def events():
             sys.exit()
 
 
-def main():
+# Main Menu Fase
+def main_menu():
 
-    # Main Menu Fase
+    # Variables
     menu = True
+    play_text_y = HEIGHT-200
+    text_speed = 0.7
+
+    # Create UI
+    play_text = FONT.render("Press left click to Start!", True, 'white')
+    logo = pygame.transform.scale(pygame.image.load("assets/ui/logo.png"), (344, 152))
+
     while menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-        # Create UI
-        logo = pygame.transform.scale(pygame.image.load("assets/ui/logo.png"), (344, 152))
-        play_text = FONT.render("Press any button to Start!", True, 'white')
+        # Text Movement
+        if (play_text_y < HEIGHT-215 or play_text_y > HEIGHT-185):
+            text_speed *= -1
+        play_text_y -= text_speed
 
         # Display UI
         WIN.blit(logo, (WIDTH/2 - logo.get_width()/2 , 50))
-
-        WIN.blit(play_text, (WIDTH/2-play_text.get_width()/2, HEIGHT-200))
+        WIN.blit(play_text, (WIDTH/2-play_text.get_width()/2, play_text_y))
 
         # Close UI
         if pygame.mouse.get_pressed()[0]:
@@ -80,30 +99,34 @@ def main():
         clock.tick(60)
         WIN.fill('black')
 
-    # Delay
-    pygame.time.delay(300)
 
-    # Setup Game Fase
-    game_start = False
+# Setup Game Fase
+def setup_game_menu():
+
+    # Variables
+    game_start = False 
     level.pre_run()
     carrot_count = 0
     player_color = (141, 176, 36)
+
+    # Create UI
+    text_0 = FONT.render("Player " + str(carrot_count+1), True, player_color)
+    text_1 = FONT.render("         select a box and hide your Carrot!", True, 'white')
+
     while not game_start:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-        text_0 = FONT.render("Player " + str(carrot_count), True, player_color)
-        text_1 = FONT.render("         select a box and hide your Carrot!", True, 'white')
+        text_0 = FONT.render("Player " + str(carrot_count+1), True, player_color)
         WIN.blit(text_1, (WIDTH/2-text_1.get_width()/2, 30))
         WIN.blit(text_0, (WIDTH/2-text_1.get_width()/2, 30))
 
         for box in level.boxes.sprites():
-            # Destroy Boxes
             if pygame.mouse.get_pressed()[0] and box.rect.collidepoint(pygame.mouse.get_pos()):
                 #box.kill()
-                carrot = Carrot((box.rect.x, box.rect.y))
+                carrot = Carrot((box.rect.x, box.rect.y), carrot_count)
                 level.insert_carrot(carrot)
                 carrot_count += 1
                 player_color = (66, 117, 216)
@@ -115,6 +138,29 @@ def main():
         pygame.display.update()
         clock.tick(60)
 
+
+# Main Game
+def game_ui():
+    
+    score = [0,0]
+    for player in level.player_obj:
+        score[int(player.id)-1] = FONT_SCORE.render("x" + str(player.points), True, 'black')
+
+    WIN.blit(player_1_icon, (10, 10))
+    WIN.blit(carrot_icon, (50, 10))
+    WIN.blit(score[0], (90, 20 + score[0].get_height()/2))
+
+    WIN.blit(player_2_icon, (WIDTH - 50, 10))
+    WIN.blit(carrot_icon, (WIDTH - 90, 10))
+    WIN.blit(score[1], (WIDTH - 90 - score[1].get_width(), 20 + score[1].get_height()/2))
+
+
+def main():
+
+    # First Menus
+    main_menu()
+    pygame.time.delay(300)
+    setup_game_menu()
 
     # Game Loop
     while True:
@@ -133,6 +179,13 @@ def main():
                 explosion.update(0.25)
                 WIN.blit(explosion.image, explosion.rect)
 
+        # Draw the in game UI
+        game_ui()
+
+        # Check if its needed to reset the level
+        if len(level.carrots) < 2:
+            level.reset_level()
+            setup_game_menu()
 
         pygame.display.update()
         clock.tick(60)

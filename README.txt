@@ -4,10 +4,6 @@
 Player
     - Player Sprites (praticamente)
 
-Carrot
-    - Scoring
-    - Differentiate the carrots
-
 Boxes
     - Get destroyed animation
 
@@ -15,11 +11,11 @@ Bomb
     - Bug with timer
 
 Others
-    - UI
+    - Bug with the explosion after level completion
+    - Bug with player sprite after level completion
+    - Bug in placing the bomb
     - Sound
     - Music
-    - Reset after catch carrot
-
 
 Nice to have
     - Rockets

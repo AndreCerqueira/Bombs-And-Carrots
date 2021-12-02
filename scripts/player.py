@@ -1,15 +1,16 @@
 import pygame
 from utilis import import_folder
-from bomb import Bomb
+from items import Bomb
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, id):
+    def __init__(self, pos, id, points):
         super().__init__()
 
         self.bombs = []
         self.bombing = False
         self.id = id
-        
+        #self.carrots = []
+        self.points = points
         
         # Player Keys
         if id == '1':
