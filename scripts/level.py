@@ -3,6 +3,7 @@ from random import randint
 from settings import *
 from player import Player
 from items import Box, Rock
+from explosion import Explosion
 from pytmx.util_pygame import load_pygame
     
 class Level():
@@ -12,7 +13,8 @@ class Level():
         self.tmxdata = load_pygame("assets/levels/level_data/map_0.tmx")
         self.display_surface = surface 
         self.carrots = []
-        self.setup_level(levels[randint(0, 3)])
+        self.explosionList = []
+        self.setup_level(levels[randint(1, 4)])
 
 
     def insert_carrot(self, carrot):
@@ -153,7 +155,7 @@ class Level():
         self.draw_map()
         self.boxes.draw(self.display_surface)
         self.rocks.draw(self.display_surface)
-        self.player.update(self.display_surface)
+        self.player.update()
         self.player.draw(self.display_surface)
 
 
@@ -174,7 +176,7 @@ class Level():
 
     def reset_level(self):
         self.carrots.clear()
-        self.setup_level(levels[randint(0, 3)])
+        self.setup_level(levels[randint(1, 4)])
 
 
     def run(self):
@@ -191,5 +193,54 @@ class Level():
             self.display_surface.blit(carrot.image, carrot.rect)
         self.boxes.draw(self.display_surface)
         self.rocks.draw(self.display_surface)
-        self.player.update(self.display_surface)
+        self.player.update()
         self.player.draw(self.display_surface)
+
+        # Bombs
+        for player in self.player_obj:
+            try:
+                if player.bombing:
+                    self.bomb_timer(player)
+                    self.display_surface.blit(player.bomb.image, player.bomb.rect)
+            except:
+                pass
+
+        # Explosions
+        for explosion in self.explosionList:
+            explosion.update(0.25)
+            self.display_surface.blit(explosion.image, explosion.rect)
+
+
+    def bomb_timer(self, player):
+
+        if player.bomb.last <= player.bomb.cooldown:
+            player.bomb.last += 1
+        else:
+            self.explosion(player)
+            
+
+    def explosion(self, player):
+
+        # Get Bomb Position
+        x = player.bomb.rect.x - 30
+        y = player.bomb.rect.y - 30
+
+        # Create Explosion
+        explosion = Explosion((x, y))
+        self.explosionList.append(explosion)
+
+        # Destroy bomb
+        player.bombing = False
+
+        # Get the bomb area
+        destruction_area = pygame.Rect(explosion.rect)
+        destruction_area.width -= 20
+        destruction_area.height -= 20
+        destruction_area.x += 20
+        destruction_area.y += 20
+        
+        # Destroy Boxes
+        for box in self.boxes.sprites():
+            if destruction_area.colliderect(box.rect):
+                box.kill()
+

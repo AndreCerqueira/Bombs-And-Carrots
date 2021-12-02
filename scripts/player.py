@@ -6,7 +6,6 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos, id, points):
         super().__init__()
 
-        self.bombs = []
         self.bombing = False
         self.id = id
         #self.carrots = []
@@ -113,22 +112,17 @@ class Player(pygame.sprite.Sprite):
 
 
     def drop_bomb(self):
-        if (len(self.bombs) == 0):
+        if not self.bombing:
             x = self.rect.x + 30
             y = self.rect.y + self.height/2
-            bomb = Bomb((x, y))
-            self.bombs.append(bomb)
+
+            self.bomb = Bomb((x, y))
             self.bombing = True
-            pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 
-    def update(self, win):
+    def update(self):
         self.get_input()
         self.get_status()
         self.animate()
 
-        
-        if (len(self.bombs) > 0):
-            win.blit(self.bombs[0].image, self.bombs[0].rect)
 
-    #def draw():

@@ -17,6 +17,7 @@ explosionList = [[],[]]
 
 # Game UI
 FONT_SCORE = pygame.font.Font("assets/fonts/prstart.ttf", 20)
+FONT_SCORER = pygame.font.Font("assets/fonts/prstart.ttf", 40)
 carrot_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_carrot.png"), (48, 48))
 player_1_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player1.png"), (48, 48))
 player_2_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player2.png"), (48, 48))
@@ -24,41 +25,6 @@ player_2_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player2
 # Events
 def events():
     for event in pygame.event.get():
-        if event.type == pygame.USEREVENT: 
-
-            for player in level.player_obj:
-                if player.bombing == True:
-                    
-                    # Verify bug of having more than 1 bomb
-                    if len(player.bombs) > 1:
-                        player.bombs.pop(0)
-
-                    # Get Bomb Position
-                    x = player.bombs[0].rect.x - 30
-                    y = player.bombs[0].rect.y - 30
-                    id = int(player.id)-1
-
-                    # Create Explosion
-                    explosion = Explosion((x, y))
-                    explosionList[id].append(explosion)
-                    
-                    # Destroy bomb
-                    level.player_obj[id].bombs.clear()
-                    level.player_obj[id].bombing = False
-
-                    # Get the bomb area
-                    destruction_area = pygame.Rect(explosion.rect)
-                    destruction_area.width -= 20
-                    destruction_area.height -= 20
-                    destruction_area.x += 20
-                    destruction_area.y += 20
-
-                    # Destroy Boxes
-                    for box in level.boxes.sprites():
-                        if destruction_area.colliderect(box.rect):
-                            box.kill()
-
-            pygame.time.set_timer(pygame.USEREVENT, 0)
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
@@ -77,10 +43,7 @@ def main_menu():
     logo = pygame.transform.scale(pygame.image.load("assets/ui/logo.png"), (344, 152))
 
     while menu:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        events()
 
         # Text Movement
         if (play_text_y < HEIGHT-215 or play_text_y > HEIGHT-185):
@@ -114,14 +77,12 @@ def setup_game_menu():
     text_1 = FONT.render("         select a box and hide your Carrot!", True, 'white')
 
     while not game_start:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        events()
 
         text_0 = FONT.render("Player " + str(carrot_count+1), True, player_color)
         WIN.blit(text_1, (WIDTH/2-text_1.get_width()/2, 30))
         WIN.blit(text_0, (WIDTH/2-text_1.get_width()/2, 30))
+        game_ui()
 
         for box in level.boxes.sprites():
             if pygame.mouse.get_pressed()[0] and box.rect.collidepoint(pygame.mouse.get_pos()):
@@ -139,7 +100,7 @@ def setup_game_menu():
         clock.tick(60)
 
 
-# Main Game
+# Game UI
 def game_ui():
     
     score = [0,0]
@@ -155,6 +116,7 @@ def game_ui():
     WIN.blit(score[1], (WIDTH - 90 - score[1].get_width(), 20 + score[1].get_height()/2))
 
 
+# Main Game
 def main():
 
     # First Menus
@@ -168,22 +130,16 @@ def main():
         
         level.run()
 
-        # Draw the explosions
-        if len(explosionList[0]) > 0:
-            for explosion in explosionList[0]:
-                explosion.update(0.25)
-                WIN.blit(explosion.image, explosion.rect)
-
-        if len(explosionList[1]) > 0:
-            for explosion in explosionList[1]:
-                explosion.update(0.25)
-                WIN.blit(explosion.image, explosion.rect)
-
         # Draw the in game UI
         game_ui()
 
         # Check if its needed to reset the level
         if len(level.carrots) < 2:
+            
+            # Draw win popup
+            #temp = FONT_SCORER.render("PLAYER 1 FOUND IT!!", 1, 'black')
+            #WIN.blit(temp, (300, 300))
+
             level.reset_level()
             setup_game_menu()
 

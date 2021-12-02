@@ -3,12 +3,11 @@
 
 Player
     - Player Sprites (praticamente)
+    - Player score warning
 
 Boxes
     - Get destroyed animation
 
-Bomb
-    - Bug with timer
 
 Others
     - Bug with the explosion after level completion
