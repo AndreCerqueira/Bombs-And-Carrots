@@ -19,8 +19,9 @@ explosionList = [[],[]]
 FONT_SCORE = pygame.font.Font("assets/fonts/prstart.ttf", 20)
 FONT_SCORER = pygame.font.Font("assets/fonts/prstart.ttf", 40)
 carrot_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_carrot.png"), (48, 48))
-player_1_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player1.png"), (48, 48))
-player_2_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player2.png"), (48, 48))
+player_1_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player1.png"), (21*2.5, 16*2.5))
+player_2_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player2.png"), (21*2.5, 16*2.5))
+backgound_music = pygame.mixer.Sound("c:/Pygame_Projects/Bombs_And_Carrots_Pygame/assets/sounds/background.mp3")
 
 # Events
 def events():
@@ -41,6 +42,9 @@ def main_menu():
     # Create UI
     play_text = FONT.render("Press left click to Start!", True, 'white')
     logo = pygame.transform.scale(pygame.image.load("assets/ui/logo.png"), (344, 152))
+
+    backgound_music.play(-1)
+    backgound_music.set_volume(1)
 
     while menu:
         events()
@@ -107,13 +111,13 @@ def game_ui():
     for player in level.player_obj:
         score[int(player.id)-1] = FONT_SCORE.render("x" + str(player.points), True, 'black')
 
-    WIN.blit(player_1_icon, (10, 10))
-    WIN.blit(carrot_icon, (50, 10))
-    WIN.blit(score[0], (90, 20 + score[0].get_height()/2))
+    WIN.blit(player_1_icon, (10, 15))
+    WIN.blit(carrot_icon, (60, 10))
+    WIN.blit(score[0], (105, 20 + score[0].get_height()/2))
 
-    WIN.blit(player_2_icon, (WIDTH - 50, 10))
-    WIN.blit(carrot_icon, (WIDTH - 90, 10))
-    WIN.blit(score[1], (WIDTH - 90 - score[1].get_width(), 20 + score[1].get_height()/2))
+    WIN.blit(player_2_icon, (WIDTH - 60, 15))
+    WIN.blit(carrot_icon, (WIDTH - 110, 10))
+    WIN.blit(score[1], (WIDTH - 110 - score[1].get_width(), 20 + score[1].get_height()/2))
 
 
 # Main Game

@@ -8,7 +8,6 @@ class Player(pygame.sprite.Sprite):
 
         self.bombing = False
         self.id = id
-        #self.carrots = []
         self.points = points
         
         # Player Keys
@@ -46,6 +45,11 @@ class Player(pygame.sprite.Sprite):
         self.speed = 4
         self.direction = pygame.math.Vector2(0,0)
 
+        # Sounds
+        self.place_bomb_sound = pygame.mixer.Sound("c:/Pygame_Projects/Bombs_And_Carrots_Pygame/assets/sounds/place_bomb.wav")
+        self.place_bomb_sound.set_volume(0.05)
+
+
 
     def import_character_assets(self):
         character_path = 'assets/player_' + self.id + '/'
@@ -70,7 +74,7 @@ class Player(pygame.sprite.Sprite):
         if self.direction.x < 0:
             flip = True
 
-        self.image = pygame.transform.flip(pygame.transform.scale(image, (self.width, self.height)), flip, False)
+        self.image = pygame.transform.flip(pygame.transform.scale(image, (67.5, 82.5)), flip, False)
         
 
     def get_input(self):
@@ -113,7 +117,8 @@ class Player(pygame.sprite.Sprite):
 
     def drop_bomb(self):
         if not self.bombing:
-            x = self.rect.x + 30
+            self.place_bomb_sound.play()
+            x = self.rect.x + 15
             y = self.rect.y + self.height/2
 
             self.bomb = Bomb((x, y))

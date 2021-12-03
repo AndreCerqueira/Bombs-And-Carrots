@@ -14,7 +14,10 @@ class Level():
         self.display_surface = surface 
         self.carrots = []
         self.explosionList = []
-        self.setup_level(levels[randint(1, 4)])
+        self.setup_level(levels[randint(0, 4)])
+
+        self.explosion_sound = pygame.mixer.Sound('c:/Pygame_Projects/Bombs_And_Carrots_Pygame/assets/sounds/explosion.mp3')
+        self.explosion_sound.set_volume(0.05)
 
 
     def insert_carrot(self, carrot):
@@ -60,8 +63,8 @@ class Level():
 
                 elif cell == '1' or cell == '2':
 
-                    x = col_index * tile_size + WIDTH_OFFSET + offset.x - 30
-                    y = row_index * tile_size + HEIGHT_OFFSET + offset.y - 60
+                    x = col_index * tile_size + WIDTH_OFFSET + offset.x - 0
+                    y = row_index * tile_size + HEIGHT_OFFSET + offset.y - 30
                     
                     player_sprite = Player((x,y), cell, backup_points[int(cell)-1])
                     self.player_obj.append(player_sprite)
@@ -176,7 +179,7 @@ class Level():
 
     def reset_level(self):
         self.carrots.clear()
-        self.setup_level(levels[randint(1, 4)])
+        self.setup_level(levels[randint(0, 4)])
 
 
     def run(self):
@@ -226,6 +229,7 @@ class Level():
         y = player.bomb.rect.y - 30
 
         # Create Explosion
+        self.explosion_sound.play()
         explosion = Explosion((x, y))
         self.explosionList.append(explosion)
 
