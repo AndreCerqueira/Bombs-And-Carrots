@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, os
 from settings import WIDTH, HEIGHT
 from level import Level
 from items import Carrot
@@ -21,7 +21,7 @@ FONT_SCORER = pygame.font.Font("assets/fonts/prstart.ttf", 40)
 carrot_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_carrot.png"), (48, 48))
 player_1_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player1.png"), (21*2.5, 16*2.5))
 player_2_icon = pygame.transform.scale(pygame.image.load("assets/ui/icon_player2.png"), (21*2.5, 16*2.5))
-backgound_music = pygame.mixer.Sound("c:/Pygame_Projects/Bombs_And_Carrots_Pygame/assets/sounds/background.mp3")
+backgound_music = pygame.mixer.Sound(os.path.join("assets/sounds/background.mp3"))
 
 # Events
 def events():
@@ -74,7 +74,7 @@ def setup_game_menu():
     game_start = False 
     level.pre_run()
     carrot_count = 0
-    player_color = (141, 176, 36)
+    player_color = (95, 205, 228)
 
     # Create UI
     text_0 = FONT.render("Player " + str(carrot_count+1), True, player_color)
@@ -94,7 +94,7 @@ def setup_game_menu():
                 carrot = Carrot((box.rect.x, box.rect.y), carrot_count)
                 level.insert_carrot(carrot)
                 carrot_count += 1
-                player_color = (66, 117, 216)
+                player_color = (220, 50, 86)
                 level.pre_run()
                 pygame.time.delay(300)
                 if carrot_count == 2:

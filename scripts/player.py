@@ -1,4 +1,5 @@
 import pygame
+import os
 from utilis import import_folder
 from items import Bomb
 
@@ -46,7 +47,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0,0)
 
         # Sounds
-        self.place_bomb_sound = pygame.mixer.Sound("c:/Pygame_Projects/Bombs_And_Carrots_Pygame/assets/sounds/place_bomb.wav")
+        self.place_bomb_sound = pygame.mixer.Sound(os.path.join("assets/sounds/place_bomb.wav"))
         self.place_bomb_sound.set_volume(0.05)
 
 
