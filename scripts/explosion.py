@@ -5,7 +5,7 @@ class Explosion(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
 
-        self.sprites = import_folder_explosion("assets/effects/explosion/")
+        self.sprites = import_folder_explosion("../assets/effects/explosion/")
         self.current_sprite = 0
 
         self.image = self.sprites[self.current_sprite]

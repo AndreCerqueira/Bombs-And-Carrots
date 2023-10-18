@@ -47,13 +47,12 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0,0)
 
         # Sounds
-        self.place_bomb_sound = pygame.mixer.Sound(os.path.join("assets/sounds/place_bomb.wav"))
+        self.place_bomb_sound = pygame.mixer.Sound(os.path.join("../assets/sounds/place_bomb.wav"))
         self.place_bomb_sound.set_volume(0.05)
 
 
-
     def import_character_assets(self):
-        character_path = 'assets/player_' + self.id + '/'
+        character_path = '../assets/player_' + self.id + '/'
         self.animations = {'idle-front':[],'walk-front':[],'walk-back':[],'walk-side':[]}
 
         for animation in self.animations.keys():

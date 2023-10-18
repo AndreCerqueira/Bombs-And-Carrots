@@ -6,26 +6,25 @@ from player import Player
 from items import Box, Rock
 from explosion import Explosion
 from pytmx.util_pygame import load_pygame
-    
-class Level():
+
+
+class Level:
     def __init__(self, surface):
         super().__init__()
 
-        self.tmxdata = load_pygame("assets/levels/level_data/map_0.tmx")
-        self.display_surface = surface 
+        self.tmxdata = load_pygame("../assets/levels/level_data/map_0.tmx")
+        self.display_surface = surface
         self.carrots = []
         self.explosionList = []
         self.setup_level(levels[randint(0, 4)])
 
-        self.explosion_sound = pygame.mixer.Sound(os.path.join("assets/sounds/explosion.mp3"))
+        self.explosion_sound = pygame.mixer.Sound(os.path.join("../assets/sounds/explosion.mp3"))
         self.explosion_sound.set_volume(0.05)
-
 
     def insert_carrot(self, carrot):
         self.carrots.append(carrot)
 
-
-    def setup_level(self,layout):
+    def setup_level(self, layout):
         self.boxes = pygame.sprite.Group()
         self.rocks = pygame.sprite.Group()
 
@@ -43,34 +42,33 @@ class Level():
         for row_index, row in enumerate(layout):
             offset.y += TILE_OFFSET * 2
             offset.x = 0
-            for col_index,cell in enumerate(row):
+            for col_index, cell in enumerate(row):
                 offset.x += TILE_OFFSET * 2
 
                 if cell == 'C':
-                    
+
                     x = col_index * tile_size + WIDTH_OFFSET + offset.x
                     y = row_index * tile_size + HEIGHT_OFFSET + offset.y
 
-                    box = Box((x,y))
+                    box = Box((x, y))
                     self.boxes.add(box)
 
                 elif cell == 'R':
-                    
+
                     x = col_index * tile_size + WIDTH_OFFSET + offset.x - 10
                     y = row_index * tile_size + HEIGHT_OFFSET + offset.y - 10
 
-                    rock = Rock((x,y))
+                    rock = Rock((x, y))
                     self.rocks.add(rock)
 
                 elif cell == '1' or cell == '2':
 
                     x = col_index * tile_size + WIDTH_OFFSET + offset.x - 0
                     y = row_index * tile_size + HEIGHT_OFFSET + offset.y - 30
-                    
-                    player_sprite = Player((x,y), cell, backup_points[int(cell)-1])
+
+                    player_sprite = Player((x, y), cell, backup_points[int(cell) - 1])
                     self.player_obj.append(player_sprite)
                     self.player.add(player_sprite)
-
 
     def draw_map(self):
         for layer in self.tmxdata:
@@ -78,7 +76,6 @@ class Level():
                 x_pixel = tile[0] * 32
                 y_pixel = tile[1] * 32
                 self.display_surface.blit(tile[2], (x_pixel, y_pixel))
-
 
     def horizontal_movement_collision(self):
 
@@ -95,7 +92,7 @@ class Level():
                 temp_rect.x = (rect.x - 30)
                 temp_rect.y = (rect.y - 60)
                 if temp_rect.colliderect(player.rect):
-                    if player.direction.x < 0: 
+                    if player.direction.x < 0:
                         player.rect.left = temp_rect.right
                         player.on_left = True
                         self.current_x = player.rect.left
@@ -115,7 +112,6 @@ class Level():
             if player.rect.x > BORDER_X_MAX:
                 player.rect.left = BORDER_X_MAX
 
-
     def vertical_movement_collision(self):
 
         for player in self.player.sprites():
@@ -131,7 +127,7 @@ class Level():
                 temp_rect.x = (rect.x - 30)
                 temp_rect.y = (rect.y - 60)
                 if temp_rect.colliderect(player.rect):
-                    if player.direction.y > 0: 
+                    if player.direction.y > 0:
                         player.rect.bottom = temp_rect.top
                         player.on_down = True
                         self.current_y = player.rect.bottom
@@ -151,7 +147,6 @@ class Level():
             if player.rect.y > BORDER_Y_MAX:
                 player.rect.top = BORDER_Y_MAX
 
-
     def pre_run(self):
         self.boxes.update()
         self.horizontal_movement_collision()
@@ -161,7 +156,6 @@ class Level():
         self.rocks.draw(self.display_surface)
         self.player.update()
         self.player.draw(self.display_surface)
-
 
     def carrot_player_collision(self):
 
@@ -173,15 +167,13 @@ class Level():
 
             for player in self.player_obj:
                 if player.rect.colliderect(temp_rect):
-                    if int(player.id)-1 != carrot.id:
+                    if int(player.id) - 1 != carrot.id:
                         player.points += 1
                         self.carrots.remove(carrot)
-
 
     def reset_level(self):
         self.carrots.clear()
         self.setup_level(levels[randint(0, 4)])
-
 
     def run(self):
 
@@ -214,14 +206,12 @@ class Level():
             explosion.update(0.25)
             self.display_surface.blit(explosion.image, explosion.rect)
 
-
     def bomb_timer(self, player):
 
         if player.bomb.last <= player.bomb.cooldown:
             player.bomb.last += 1
         else:
             self.explosion(player)
-            
 
     def explosion(self, player):
 
@@ -243,9 +233,8 @@ class Level():
         destruction_area.height -= 20
         destruction_area.x += 20
         destruction_area.y += 20
-        
+
         # Destroy Boxes
         for box in self.boxes.sprites():
             if destruction_area.colliderect(box.rect):
                 box.kill()
-
